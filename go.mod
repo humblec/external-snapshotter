@@ -4,26 +4,32 @@ go 1.12
 
 require (
 	github.com/container-storage-interface/spec v1.2.0
-	github.com/golang/mock v1.2.0
-	github.com/golang/protobuf v1.3.2
-	github.com/google/go-cmp v0.3.1 // indirect
-	github.com/imdario/mergo v0.3.7 // indirect
+	github.com/golang/mock v1.4.3
+	github.com/golang/protobuf v1.3.5
+	github.com/google/go-cmp v0.4.0 // indirect
+	github.com/imdario/mergo v0.3.9 // indirect
 	github.com/kubernetes-csi/csi-lib-utils v0.7.0
 	github.com/kubernetes-csi/csi-test v2.0.0+incompatible
-	google.golang.org/grpc v1.26.0
-	k8s.io/api v0.17.0
-	k8s.io/apimachinery v0.17.1-beta.0
-	k8s.io/client-go v0.17.0
-	k8s.io/code-generator v0.0.0-20191121015212-c4c8f8345c7e
+	google.golang.org/grpc v1.28.0
+	k8s.io/api v0.18.0
+	k8s.io/apimachinery v0.18.0
+	k8s.io/client-go v0.18.0
+	k8s.io/code-generator v0.18.0
 	k8s.io/klog v1.0.0
-	k8s.io/kubernetes v1.14.0
+	k8s.io/kubernetes v1.18.0
 )
 
+replace k8s.io/api => k8s.io/api v0.18.0
+
 replace k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.17.0
+
+replace k8s.io/apimachinery => k8s.io/apimachinery v0.18.0
 
 replace k8s.io/apiserver => k8s.io/apiserver v0.17.0
 
 replace k8s.io/cli-runtime => k8s.io/cli-runtime v0.17.0
+
+replace k8s.io/client-go => k8s.io/client-go v0.18.0
 
 replace k8s.io/cloud-provider => k8s.io/cloud-provider v0.17.0
 
@@ -58,3 +64,5 @@ replace k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.17.0
 replace k8s.io/sample-cli-plugin => k8s.io/sample-cli-plugin v0.17.0
 
 replace k8s.io/sample-controller => k8s.io/sample-controller v0.17.0
+
+replace k8s.io/csi-translation-lib => k8s.io/csi-translation-lib v0.18.0
