@@ -68,7 +68,7 @@ func (c *volumeSnapshotContents) Get(name string, options v1.GetOptions) (result
 		Resource("volumesnapshotcontents").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -84,7 +84,7 @@ func (c *volumeSnapshotContents) List(opts v1.ListOptions) (result *v1beta1.Volu
 		Resource("volumesnapshotcontents").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -100,7 +100,7 @@ func (c *volumeSnapshotContents) Watch(opts v1.ListOptions) (watch.Interface, er
 		Resource("volumesnapshotcontents").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Watch()
+		Watch(ctx)
 }
 
 // Create takes the representation of a volumeSnapshotContent and creates it.  Returns the server's representation of the volumeSnapshotContent, and an error, if there is any.
@@ -109,7 +109,7 @@ func (c *volumeSnapshotContents) Create(volumeSnapshotContent *v1beta1.VolumeSna
 	err = c.client.Post().
 		Resource("volumesnapshotcontents").
 		Body(volumeSnapshotContent).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -121,7 +121,7 @@ func (c *volumeSnapshotContents) Update(volumeSnapshotContent *v1beta1.VolumeSna
 		Resource("volumesnapshotcontents").
 		Name(volumeSnapshotContent.Name).
 		Body(volumeSnapshotContent).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -136,7 +136,7 @@ func (c *volumeSnapshotContents) UpdateStatus(volumeSnapshotContent *v1beta1.Vol
 		Name(volumeSnapshotContent.Name).
 		SubResource("status").
 		Body(volumeSnapshotContent).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -147,7 +147,7 @@ func (c *volumeSnapshotContents) Delete(name string, options *v1.DeleteOptions) 
 		Resource("volumesnapshotcontents").
 		Name(name).
 		Body(options).
-		Do().
+		Do(ctx).
 		Error()
 }
 
@@ -162,7 +162,7 @@ func (c *volumeSnapshotContents) DeleteCollection(options *v1.DeleteOptions, lis
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
 		Body(options).
-		Do().
+		Do(ctx).
 		Error()
 }
 
@@ -174,7 +174,7 @@ func (c *volumeSnapshotContents) Patch(name string, pt types.PatchType, data []b
 		SubResource(subresources...).
 		Name(name).
 		Body(data).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }

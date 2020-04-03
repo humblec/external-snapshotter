@@ -19,6 +19,7 @@ limitations under the License.
 package v1beta1
 
 import (
+	"context"
 	"time"
 
 	v1beta1 "github.com/kubernetes-csi/external-snapshotter/v2/pkg/apis/volumesnapshot/v1beta1"
@@ -28,6 +29,8 @@ import (
 	watch "k8s.io/apimachinery/pkg/watch"
 	rest "k8s.io/client-go/rest"
 )
+
+var ctx context.Context = context.Background()
 
 // VolumeSnapshotsGetter has a method to return a VolumeSnapshotInterface.
 // A group's client should implement this interface.
@@ -71,7 +74,7 @@ func (c *volumeSnapshots) Get(name string, options v1.GetOptions) (result *v1bet
 		Resource("volumesnapshots").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -88,7 +91,7 @@ func (c *volumeSnapshots) List(opts v1.ListOptions) (result *v1beta1.VolumeSnaps
 		Resource("volumesnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -105,7 +108,7 @@ func (c *volumeSnapshots) Watch(opts v1.ListOptions) (watch.Interface, error) {
 		Resource("volumesnapshots").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Watch()
+		Watch(ctx)
 }
 
 // Create takes the representation of a volumeSnapshot and creates it.  Returns the server's representation of the volumeSnapshot, and an error, if there is any.
@@ -115,7 +118,7 @@ func (c *volumeSnapshots) Create(volumeSnapshot *v1beta1.VolumeSnapshot) (result
 		Namespace(c.ns).
 		Resource("volumesnapshots").
 		Body(volumeSnapshot).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -128,7 +131,7 @@ func (c *volumeSnapshots) Update(volumeSnapshot *v1beta1.VolumeSnapshot) (result
 		Resource("volumesnapshots").
 		Name(volumeSnapshot.Name).
 		Body(volumeSnapshot).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -144,7 +147,7 @@ func (c *volumeSnapshots) UpdateStatus(volumeSnapshot *v1beta1.VolumeSnapshot) (
 		Name(volumeSnapshot.Name).
 		SubResource("status").
 		Body(volumeSnapshot).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -156,7 +159,7 @@ func (c *volumeSnapshots) Delete(name string, options *v1.DeleteOptions) error {
 		Resource("volumesnapshots").
 		Name(name).
 		Body(options).
-		Do().
+		Do(ctx).
 		Error()
 }
 
@@ -172,7 +175,7 @@ func (c *volumeSnapshots) DeleteCollection(options *v1.DeleteOptions, listOption
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
 		Body(options).
-		Do().
+		Do(ctx).
 		Error()
 }
 
@@ -185,7 +188,7 @@ func (c *volumeSnapshots) Patch(name string, pt types.PatchType, data []byte, su
 		SubResource(subresources...).
 		Name(name).
 		Body(data).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }

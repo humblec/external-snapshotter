@@ -67,7 +67,7 @@ func (c *volumeSnapshotClasses) Get(name string, options v1.GetOptions) (result 
 		Resource("volumesnapshotclasses").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -83,7 +83,7 @@ func (c *volumeSnapshotClasses) List(opts v1.ListOptions) (result *v1beta1.Volum
 		Resource("volumesnapshotclasses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -99,7 +99,7 @@ func (c *volumeSnapshotClasses) Watch(opts v1.ListOptions) (watch.Interface, err
 		Resource("volumesnapshotclasses").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Watch()
+		Watch(ctx)
 }
 
 // Create takes the representation of a volumeSnapshotClass and creates it.  Returns the server's representation of the volumeSnapshotClass, and an error, if there is any.
@@ -108,7 +108,7 @@ func (c *volumeSnapshotClasses) Create(volumeSnapshotClass *v1beta1.VolumeSnapsh
 	err = c.client.Post().
 		Resource("volumesnapshotclasses").
 		Body(volumeSnapshotClass).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -120,7 +120,7 @@ func (c *volumeSnapshotClasses) Update(volumeSnapshotClass *v1beta1.VolumeSnapsh
 		Resource("volumesnapshotclasses").
 		Name(volumeSnapshotClass.Name).
 		Body(volumeSnapshotClass).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
@@ -131,7 +131,7 @@ func (c *volumeSnapshotClasses) Delete(name string, options *v1.DeleteOptions) e
 		Resource("volumesnapshotclasses").
 		Name(name).
 		Body(options).
-		Do().
+		Do(ctx).
 		Error()
 }
 
@@ -146,7 +146,7 @@ func (c *volumeSnapshotClasses) DeleteCollection(options *v1.DeleteOptions, list
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
 		Body(options).
-		Do().
+		Do(ctx).
 		Error()
 }
 
@@ -158,7 +158,7 @@ func (c *volumeSnapshotClasses) Patch(name string, pt types.PatchType, data []by
 		SubResource(subresources...).
 		Name(name).
 		Body(data).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
