@@ -19,10 +19,9 @@ package utils
 import (
 	"context"
 	"fmt"
-	"strings"
-
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	crdv1 "github.com/kubernetes-csi/external-snapshotter/v2/pkg/apis/volumesnapshot/v1beta1"
