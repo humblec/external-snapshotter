@@ -610,7 +610,7 @@ func (ctrl *csiSnapshotSideCarController) setAnnVolumeSnapshotBeingCreated(conte
 	contentClone := content.DeepCopy()
 	metav1.SetMetaDataAnnotation(&contentClone.ObjectMeta, utils.AnnVolumeSnapshotBeingCreated, "yes")
 
-	updatedContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Update(contentClone)
+	updatedContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Update(ctx, contentClone, metav1.UpdateOptions{})
 	if err != nil {
 		return newControllerUpdateError(content.Name, err.Error())
 	}
@@ -636,7 +636,7 @@ func (ctrl csiSnapshotSideCarController) removeAnnVolumeSnapshotBeingCreated(con
 	contentClone := content.DeepCopy()
 	delete(contentClone.ObjectMeta.Annotations, utils.AnnVolumeSnapshotBeingCreated)
 
-	updatedContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Update(contentClone)
+	updatedContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Update(ctx, contentClone, metav1.UpdateOptions{})
 	if err != nil {
 		return newControllerUpdateError(content.Name, err.Error())
 	}
