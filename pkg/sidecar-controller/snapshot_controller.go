@@ -54,8 +54,6 @@ import (
 
 const controllerUpdateFailMsg = "snapshot controller failed to update"
 
-var ctx context.Context = context.Background()
-
 // syncContent deals with one key off the queue.  It returns false when it's time to quit.
 func (ctrl *csiSnapshotSideCarController) syncContent(content *crdv1.VolumeSnapshotContent) error {
 	klog.V(5).Infof("synchronizing VolumeSnapshotContent[%s]", content.Name)
@@ -197,7 +195,7 @@ func (ctrl *csiSnapshotSideCarController) updateContentErrorStatusWithEvent(cont
 	}
 	ready := false
 	contentClone.Status.ReadyToUse = &ready
-	newContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().UpdateStatus(ctx, contentClone, metav1.UpdateOptions{})
+	newContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().UpdateStatus(context.TODO(), contentClone, metav1.UpdateOptions{})
 
 	if err != nil {
 		klog.V(4).Infof("updating VolumeSnapshotContent[%s] error status failed %v", content.Name, err)
@@ -399,7 +397,7 @@ func (ctrl *csiSnapshotSideCarController) clearVolumeContentStatus(
 	contentName string) (*crdv1.VolumeSnapshotContent, error) {
 	klog.V(5).Infof("cleanVolumeSnapshotStatus content [%s]", contentName)
 	// get the latest version from API server
-	content, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Get(ctx, contentName, metav1.GetOptions{})
+	content, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Get(context.TODO(), contentName, metav1.GetOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("error get snapshot content %s from api server: %v", contentName, err)
 	}
@@ -409,7 +407,7 @@ func (ctrl *csiSnapshotSideCarController) clearVolumeContentStatus(
 		content.Status.CreationTime = nil
 		content.Status.RestoreSize = nil
 	}
-	newContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().UpdateStatus(ctx, content, metav1.UpdateOptions{})
+	newContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().UpdateStatus(context.TODO(), content, metav1.UpdateOptions{})
 	if err != nil {
 		return nil, newControllerUpdateError(contentName, err.Error())
 	}
@@ -424,7 +422,7 @@ func (ctrl *csiSnapshotSideCarController) updateSnapshotContentStatus(
 	size int64) (*crdv1.VolumeSnapshotContent, error) {
 	klog.V(5).Infof("updateSnapshotContentStatus: updating VolumeSnapshotContent [%s], snapshotHandle %s, readyToUse %v, createdAt %v, size %d", content.Name, snapshotHandle, readyToUse, createdAt, size)
 
-	contentObj, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Get(ctx, content.Name, metav1.GetOptions{})
+	contentObj, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Get(context.TODO(), content.Name, metav1.GetOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("error get snapshot content %s from api server: %v", content.Name, err)
 	}
@@ -465,7 +463,7 @@ func (ctrl *csiSnapshotSideCarController) updateSnapshotContentStatus(
 	if updated {
 		contentClone := contentObj.DeepCopy()
 		contentClone.Status = newStatus
-		newContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().UpdateStatus(ctx, contentClone, metav1.UpdateOptions{})
+		newContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().UpdateStatus(context.TODO(), contentClone, metav1.UpdateOptions{})
 		if err != nil {
 			return nil, newControllerUpdateError(content.Name, err.Error())
 		}
@@ -553,7 +551,7 @@ func (ctrl csiSnapshotSideCarController) removeContentFinalizer(content *crdv1.V
 	contentClone := content.DeepCopy()
 	contentClone.ObjectMeta.Finalizers = slice.RemoveString(contentClone.ObjectMeta.Finalizers, utils.VolumeSnapshotContentFinalizer, nil)
 
-	_, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Update(ctx, contentClone, metav1.UpdateOptions{})
+	_, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Update(context.TODO(), contentClone, metav1.UpdateOptions{})
 	if err != nil {
 		return newControllerUpdateError(content.Name, err.Error())
 	}
@@ -610,7 +608,7 @@ func (ctrl *csiSnapshotSideCarController) setAnnVolumeSnapshotBeingCreated(conte
 	contentClone := content.DeepCopy()
 	metav1.SetMetaDataAnnotation(&contentClone.ObjectMeta, utils.AnnVolumeSnapshotBeingCreated, "yes")
 
-	updatedContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Update(ctx, contentClone, metav1.UpdateOptions{})
+	updatedContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Update(context.TODO(), contentClone, metav1.UpdateOptions{})
 	if err != nil {
 		return newControllerUpdateError(content.Name, err.Error())
 	}
@@ -636,7 +634,7 @@ func (ctrl csiSnapshotSideCarController) removeAnnVolumeSnapshotBeingCreated(con
 	contentClone := content.DeepCopy()
 	delete(contentClone.ObjectMeta.Annotations, utils.AnnVolumeSnapshotBeingCreated)
 
-	updatedContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Update(ctx, contentClone, metav1.UpdateOptions{})
+	updatedContent, err := ctrl.clientset.SnapshotV1beta1().VolumeSnapshotContents().Update(context.TODO(), contentClone, metav1.UpdateOptions{})
 	if err != nil {
 		return newControllerUpdateError(content.Name, err.Error())
 	}

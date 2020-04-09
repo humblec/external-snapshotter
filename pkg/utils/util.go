@@ -320,12 +320,11 @@ func resolveTemplate(template string, params map[string]string) (string, error) 
 
 // GetCredentials retrieves credentials stored in v1.SecretReference
 func GetCredentials(k8s kubernetes.Interface, ref *v1.SecretReference) (map[string]string, error) {
-	var ctx context.Context = context.Background()
 	if ref == nil {
 		return nil, nil
 	}
 
-	secret, err := k8s.CoreV1().Secrets(ref.Namespace).Get(ctx, ref.Name, metav1.GetOptions{})
+	secret, err := k8s.CoreV1().Secrets(ref.Namespace).Get(context.TODO(), ref.Name, metav1.GetOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("error getting secret %s in namespace %s: %v", ref.Name, ref.Namespace, err)
 	}
