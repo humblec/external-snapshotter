@@ -25,26 +25,25 @@ import (
 	"strings"
 	"time"
 
+	"github.com/container-storage-interface/spec/lib/go/csi"
 	"google.golang.org/grpc"
-
+	coreinformers "k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/util/workqueue"
 	"k8s.io/klog"
 
-	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/kubernetes-csi/csi-lib-utils/connection"
 	"github.com/kubernetes-csi/csi-lib-utils/leaderelection"
 	"github.com/kubernetes-csi/csi-lib-utils/metrics"
 	csirpc "github.com/kubernetes-csi/csi-lib-utils/rpc"
-	controller "github.com/kubernetes-csi/external-snapshotter/v2/pkg/sidecar-controller"
-	"github.com/kubernetes-csi/external-snapshotter/v2/pkg/snapshotter"
-
 	clientset "github.com/kubernetes-csi/external-snapshotter/v2/pkg/client/clientset/versioned"
 	snapshotscheme "github.com/kubernetes-csi/external-snapshotter/v2/pkg/client/clientset/versioned/scheme"
 	informers "github.com/kubernetes-csi/external-snapshotter/v2/pkg/client/informers/externalversions"
-	coreinformers "k8s.io/client-go/informers"
+	controller "github.com/kubernetes-csi/external-snapshotter/v2/pkg/sidecar-controller"
+	"github.com/kubernetes-csi/external-snapshotter/v2/pkg/snapshotter"
 )
 
 const (
@@ -62,6 +61,9 @@ var (
 	showVersion            = flag.Bool("version", false, "Show version.")
 	threads                = flag.Int("worker-threads", 10, "Number of worker threads.")
 	csiTimeout             = flag.Duration("timeout", defaultCSITimeout, "The timeout for any RPCs to the CSI driver. Default is 1 minute.")
+
+	retryIntervalStart = flag.Duration("retry-interval-start", time.Millisecond, "Initial retry interval of failed volume snapshot creation or deletion. It doubles with each failure, up to retry-interval-max.")
+	retryIntervalMax   = flag.Duration("retry-interval-max", 5*time.Minute, "Maximum retry interval of failed volume snapshot creation or deletion.")
 
 	leaderElection          = flag.Bool("leader-election", false, "Enables leader election.")
 	leaderElectionNamespace = flag.String("leader-election-namespace", "", "The namespace where the leader election resource exists. Defaults to the pod namespace if not set.")
@@ -173,6 +175,7 @@ func main() {
 		*resyncPeriod,
 		*snapshotNamePrefix,
 		*snapshotNameUUIDLength,
+		workqueue.NewItemExponentialFailureRateLimiter(*retryIntervalStart, *retryIntervalMax),
 	)
 
 	run := func(context.Context) {

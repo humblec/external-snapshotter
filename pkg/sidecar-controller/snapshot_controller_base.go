@@ -25,8 +25,7 @@ import (
 	storageinformers "github.com/kubernetes-csi/external-snapshotter/v2/pkg/client/informers/externalversions/volumesnapshot/v1beta1"
 	storagelisters "github.com/kubernetes-csi/external-snapshotter/v2/pkg/client/listers/volumesnapshot/v1beta1"
 	"github.com/kubernetes-csi/external-snapshotter/v2/pkg/snapshotter"
-
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -70,6 +69,7 @@ func NewCSISnapshotSideCarController(
 	resyncPeriod time.Duration,
 	snapshotNamePrefix string,
 	snapshotNameUUIDLength int,
+	contentRateLimiter workqueue.RateLimiter,
 ) *csiSnapshotSideCarController {
 	broadcaster := record.NewBroadcaster()
 	broadcaster.StartLogging(klog.Infof)
@@ -85,7 +85,7 @@ func NewCSISnapshotSideCarController(
 		handler:       NewCSIHandler(snapshotter, timeout, snapshotNamePrefix, snapshotNameUUIDLength),
 		resyncPeriod:  resyncPeriod,
 		contentStore:  cache.NewStore(cache.DeletionHandlingMetaNamespaceKeyFunc),
-		contentQueue:  workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "csi-snapshotter-content"),
+		contentQueue:  workqueue.NewNamedRateLimitingQueue(contentRateLimiter, "csi-snapshotter-content"),
 	}
 
 	volumeSnapshotContentInformer.Informer().AddEventHandlerWithResyncPeriod(

@@ -90,6 +90,10 @@ Install CSI Driver:
 
 * `--metrics-path`: The HTTP path where prometheus metrics will be exposed. Default is `/metrics`.
 
+* `--retry-interval-start`: Initial retry interval of failed volume snapshot creation or deletion. It doubles with each failure, up to retry-interval-max.
+
+* `--retry-interval-max`: Maximum retry interval of failed volume snapshot creation or deletion.
+
 * `--worker-threads`: Number of worker threads. Default value is 10.
 
 #### Other recognized arguments
